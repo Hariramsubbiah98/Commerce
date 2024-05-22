@@ -1,0 +1,71 @@
+{% extends 'shop/main.html' %}
+{% block title %}
+  Cart | ShopKart
+{% endblock title %}
+{% block content %}
+<section class="bg-light py-4 my-5" style="min-height:600px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-3">Your Shopping Cart</h4>
+                <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% if cart %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Image</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Unit</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart %}
+                                <tr>
+                                    <td><img src="{{ item.product.product_image.url }}" height="75px" alt="{{ item.product.name }}"></td>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.product_qty }}</td>
+                                    <td>₹ {{ item.product.selling_price | stringformat:'d' }}</td>
+                                    <td class="amt">₹ {{ item.total_cost | stringformat:'d' }}</td>
+                                    <td><a href="{% url 'remove_cart' item.id %}" onclick="return confirm('Are you sure ? to remove')"class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>Remove</a></td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="3"></td>
+                                <td><b>Total Amount</b></td>
+                                <td id="net">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-center">Your cart is currently empty. Start adding some products!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="#" class="btn btn-primary">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const nodes = document.querySelectorAll('.amt');
+    const arr = Array.from(nodes);
+    const res = arr.reduce((acc, curr) => {
+        const numericText = curr.textContent.replace(/[^\d.-]/g, '');
+        const value = parseFloat(numericText);
+        return acc + value;
+    }, 0);
+
+    document.getElementById("net").innerText = `₹ ${res.toFixed(2)}`;
+</script>
+{% endblock content %}
